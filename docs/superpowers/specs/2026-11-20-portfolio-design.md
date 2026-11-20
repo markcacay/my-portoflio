@@ -65,7 +65,7 @@ The droplet remains a fallback host (nginx serving the `dist/` folder).
 - `404`.
 
 ## Featured case studies (confirmed by Mark; all clients may be named, screenshotted and linked)
-0. **Pageant Poll** (pageantpoll.com) — Mark's own SaaS product; shows he builds beyond WordPress. Source at `/Users/markcacay/Developer/pageantpoll-git` (read it for stack/features). Feature it on the homepage alongside 2 WordPress case studies.
+0. **Pageant Poll** (pageantpoll.com) — a client SaaS project (Laravel + Vue); shows he builds beyond WordPress. Feature it on the homepage alongside 2 WordPress case studies.
 1. Virtual Assistant Talent — custom 2-step GHL booking integrated with Elementor via secure PHP backend.
 2. My Medical Affairs — Figma → WP lead dev, custom Algolia-style search, social login → HubSpot.
 3. Getfish — Figma → custom theme, multi-postcode delivery slots via plugin API.
@@ -85,7 +85,7 @@ The droplet remains a fallback host (nginx serving the `dist/` folder).
 
 ## Launch and content rules (Claude's calls)
 - **Launch with content gaps, never with fake content.** Results without numbers use qualitative outcomes; the testimonials section is hidden until at least 2 approved quotes exist. Screenshots and the CV *are* required to launch.
-- **No booking calendar** (Mark has no GHL account). The client CTA is **"Start a project"** → `/contact` (Web3Forms form + email + LinkedIn).
+- **No booking calendar** (contact form is the single entry point). The client CTA is **"Start a project"** → `/contact` (Web3Forms form + email + LinkedIn).
 - **Public CV** is a cleaned PDF: references section removed (resume currently lists references' personal emails/phones), "References available on request" instead.
 - **Domain:** `https://markcacay.pages.dev` (confirmed); canonical/sitemap/OG/JSON-LD read the base URL from one `site` setting in `astro.config` so switching domains is a one-line change. Search Console submission waits for the real domain.
 - **Client naming:** case-study frontmatter `client`/`url` are optional; a case study can be anonymised ("Australian seafood retailer") with no live link if a client hasn't agreed.
