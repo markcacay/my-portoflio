@@ -1,0 +1,64 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import CtaPair from '../components/CtaPair.astro';
+import Testimonials from '../components/Testimonials.astro';
+import headshot from '../assets/mark-cacay.jpg';
+import { breadcrumbJsonLd } from '../lib/seo';
+
+const jobs = [
+  ['2025', 'Dryden Labs / Adaptable DNA', 'GoHighLevel specialist, freelance'],
+  ['2023 – 2025', 'Virtual Work Done', 'Full-stack WordPress developer and GoHighLevel specialist, freelance'],
+  ['2021 – 2023', 'xDigital Excellence, Sydney', 'Full-stack WordPress developer, full-time: Figma builds, SEO and maintenance for partner clients'],
+  ['2014 – now', 'Virtual Assistant Talent, Fremont CA', 'Website developer and webmaster, part-time: WordPress, Shopify, landing pages and email templates'],
+  ['2012 – 2014', 'Dalang Web Designs, Baguio', "WordPress developer and designer for florists' websites"],
+  ['2010 – 2012', 'Silver Connect Web Design, Baguio', 'Website developer: PSD to HTML/CSS, static sites to WordPress'],
+];
+const skills = [
+  ['Build', 'WordPress, Elementor Pro, WooCommerce, Shopify, Laravel, Vue.js, PHP, JavaScript, jQuery, HTML, CSS'],
+  ['Connect', 'GoHighLevel, HubSpot, Klaviyo, Mailchimp, Stripe, PayPal, PayMongo, REST APIs'],
+  ['Run', 'SEO, speed, Git, SiteGround, WP Engine, cPanel and WHM, DigitalOcean'],
+  ['Education', 'BS Computer Science, University of the Cordilleras, 2006 – 2009'],
+];
+const profile = { '@context': 'https://schema.org', '@type': 'ProfilePage', mainEntity: { '@id': 'https://markcacay.pages.dev/#mark' } };
+---
+<Base title="About Mark Cacay, WordPress developer since 2010" description="Mark Cacay is a Philippines-based WordPress, WooCommerce and GoHighLevel developer with 15+ years of experience working with agencies and small businesses in Australia and the US." jsonLd={[profile, breadcrumbJsonLd([{ name: 'About', path: '/about/' }])]}>
+  <section class="wrap intro">
+    <Image src={headshot} alt="Mark Cacay" widths={[360, 440, 720, 880]} sizes="(min-width: 900px) 440px, 100vw" loading="eager" fetchpriority="high" />
+    <div class="text">
+      <h1>I'm Mark Cacay, a web developer who has been building websites since 2010.</h1>
+      <p class="lede">I work from the Philippines with agencies and small businesses in Australia and the US. Most of my work is WordPress: turning Figma designs into fast, responsive sites, setting up WooCommerce, and connecting websites to tools like GoHighLevel, HubSpot and Klaviyo. When a project needs more than WordPress, I build with Laravel and Vue, as I did for my own product, <a href="/work/pageant-poll/">Pageant Poll</a>.</p>
+      <CtaPair />
+    </div>
+  </section>
+  <section class="band-white section">
+    <div class="wrap split">
+      <h2>Where I've worked</h2>
+      <ol class="rows">
+        {jobs.map(([y, co, d]) => <li><span class="label muted">{y}</span><div><h3>{co}</h3><p class="muted">{d}</p></div></li>)}
+      </ol>
+    </div>
+  </section>
+  <section class="section">
+    <div class="wrap split">
+      <h2>Skills</h2>
+      <dl class="skills">
+        {skills.map(([h, l]) => <div><dt><h3>{h}</h3></dt><dd>{l}</dd></div>)}
+      </dl>
+    </div>
+  </section>
+  <Testimonials />
+</Base>
+<style>
+  .intro { display: grid; gap: 48px 80px; grid-template-columns: minmax(0, 440px) minmax(0, 700px); padding-block: 48px 96px; align-items: start; }
+  .intro img { width: 100%; aspect-ratio: 440 / 520; object-fit: cover; border-radius: var(--radius-panel); }
+  .text { display: grid; gap: 24px; }
+  .text h1 { font-size: clamp(36px, 4vw, 48px); line-height: 1.05; }
+  .split { display: grid; gap: 32px 64px; grid-template-columns: minmax(0, 360px) 1fr; }
+  .rows { list-style: none; padding: 0; margin: 0; }
+  .rows li { display: grid; grid-template-columns: 140px 1fr; gap: 8px 32px; padding-block: 22px; border-top: 1px solid var(--color-paper-deep); }
+  .rows h3, .skills h3 { font-size: 22px; }
+  .skills { margin: 0; display: grid; gap: 28px; }
+  .skills dd { margin: 6px 0 0; font-size: 20px; }
+  @media (max-width: 860px) { .intro, .split { grid-template-columns: 1fr; } .intro img { max-width: 360px; } .rows li { grid-template-columns: 1fr; } }
+</style>

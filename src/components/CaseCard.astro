@@ -1,0 +1,21 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+interface Props { entry: CollectionEntry<'work'>; large?: boolean; eager?: boolean }
+const { entry, large = false, eager = false } = Astro.props;
+const d = entry.data;
+---
+<a class:list={['case-card', { large }]} href={`/work/${entry.id}/`}>
+  <Image src={d.cover} alt={`${d.client} website`} widths={[420, 640, 840]} sizes={large ? '(min-width: 900px) 40vw, 100vw' : '(min-width: 900px) 30vw, 100vw'} loading={eager ? 'eager' : 'lazy'} />
+  <div class="body">
+    <h3>{d.client.split(' (')[0].split(',')[0]}</h3>
+    <p>{d.summary}</p>
+    <p class="label muted">{d.stack.slice(0, 4).join(', ')}</p>
+  </div>
+</a>
+<style>
+  .case-card { display: flex; flex-direction: column; background: var(--color-white); border-radius: var(--radius-panel); overflow: hidden; color: var(--color-ink); text-decoration: none; height: 100%; }
+  .case-card img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; object-position: top; }
+  .body { display: grid; gap: 10px; padding: 20px 24px 28px; }
+  .case-card:hover h3 { text-decoration: underline; text-underline-offset: 0.15em; }
+</style>

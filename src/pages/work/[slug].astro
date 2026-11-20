@@ -1,0 +1,72 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import CtaPair from '../../components/CtaPair.astro';
+import { caseStudyJsonLd, breadcrumbJsonLd } from '../../lib/seo';
+
+export async function getStaticPaths() {
+  const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
+  return work.map((entry, i) => ({ params: { slug: entry.id }, props: { entry, next: work[(i + 1) % work.length] } }));
+}
+const { entry, next } = Astro.props as { entry: CollectionEntry<'work'>; next: CollectionEntry<'work'> };
+const d = entry.data;
+const short = d.client.split(' (')[0].split(',')[0];
+const host = d.url ? new URL(d.url).hostname.replace(/^www\./, '') : null;
+---
+<Base title={`${d.title} | ${short} case study | Mark Cacay`} description={`${short}: ${d.summary}`} image={`/og/work-${entry.id}.png`} jsonLd={[caseStudyJsonLd(entry), breadcrumbJsonLd([{ name: 'Work', path: '/work/' }, { name: short, path: `/work/${entry.id}/` }])]}>
+  <article>
+    <header class="wrap head">
+      <nav aria-label="Breadcrumb" class="label muted"><a href="/work/">Work</a> / {short}</nav>
+      <h1>{d.title}</h1>
+      <dl class="facts">
+        <div><dt class="label muted">Client</dt><dd>{d.client}</dd></div>
+        <div><dt class="label muted">My role</dt><dd>{d.role}</dd></div>
+        <div><dt class="label muted">Stack</dt><dd>{d.stack.join(', ')}</dd></div>
+      </dl>
+    </header>
+    <div class="wrap">
+      <Image class="shot" src={d.cover} alt={`${short} website on desktop`} widths={[640, 1024, 1440]} sizes="(min-width: 1440px) 1312px, 92vw" loading="eager" fetchpriority="high" />
+    </div>
+    <div class="wrap section story">
+      <section><h2>The problem</h2><p>{d.problem}</p></section>
+      <section><h2>What I did</h2><p>{d.approach}</p></section>
+      <section><h2>The result</h2><p>{d.result}</p></section>
+      {d.metrics && d.metrics.length > 0 && (
+        <section><h2>Results in numbers</h2>
+          <ul class="metrics">{d.metrics.map((m) => <li><strong>{m.value}</strong> <span class="muted">{m.label}</span></li>)}</ul>
+        </section>
+      )}
+    </div>
+    {d.gallery && d.gallery.length > 0 && (
+      <div class="wrap gallery">
+        {d.gallery.map((g) => <Image src={g} alt={`${short} website on mobile`} widths={[390, 780]} sizes="390px" loading="lazy" />)}
+      </div>
+    )}
+    <div class="wrap section links">
+      {host && <a class="live-link" href={d.url} rel="noopener" target="_blank">Visit {host}</a>}
+      <a class="next" href={`/work/${next.id}/`}>Next case study: {next.data.client.split(' (')[0].split(',')[0]}</a>
+    </div>
+    <div class="wrap closing"><CtaPair /></div>
+  </article>
+</Base>
+<style>
+  .head { padding-block: 24px 48px; display: grid; gap: 24px; }
+  .head nav a { color: inherit; }
+  .head h1 { max-width: 16ch; }
+  .facts { display: grid; gap: 20px 64px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin: 8px 0 0; }
+  dd { margin: 6px 0 0; }
+  .shot { width: 100%; border-radius: var(--radius-panel); }
+  .story { display: grid; gap: 56px; }
+  .story section { display: grid; gap: 16px 64px; grid-template-columns: minmax(0, 360px) minmax(0, 680px); }
+  .story h2 { font-size: 28px; }
+  .story p { font-size: 20px; }
+  .metrics { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+  .gallery { display: flex; gap: 24px; }
+  .gallery img { width: min(100%, 390px); border-radius: var(--radius-panel); }
+  .links { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; }
+  .links a { font: 600 22px/1.2 var(--font-display); }
+  .next { color: var(--color-ink); }
+  .closing { padding-bottom: 96px; }
+  @media (max-width: 760px) { .story section { grid-template-columns: 1fr; } .story p { font-size: 18px; } }
+</style>

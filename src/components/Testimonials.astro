@@ -1,0 +1,22 @@
+---
+import { testimonials } from '../data/testimonials';
+const show = testimonials.length >= 2;
+---
+{show && (
+  <section class="testimonials wrap section" aria-labelledby="t-h">
+    <h2 id="t-h">What clients say</h2>
+    <div class="grid">
+      {testimonials.map((t) => (
+        <figure>
+          <blockquote><p>{t.quote}</p></blockquote>
+          <figcaption class="label">{t.name}, {t.role}, {t.company}</figcaption>
+        </figure>
+      ))}
+    </div>
+  </section>
+)}
+<style>
+  .grid { display: grid; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-top: 32px; }
+  figure { margin: 0; background: var(--color-white); padding: 28px; border-radius: var(--radius-panel); }
+  blockquote { margin: 0 0 16px; font-size: 20px; }
+</style>

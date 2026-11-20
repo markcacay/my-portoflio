@@ -1,0 +1,31 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import CaseCard from '../../components/CaseCard.astro';
+import { moreWork } from '../../data/more-work';
+import { breadcrumbJsonLd } from '../../lib/seo';
+const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
+---
+<Base title="Work: WordPress, WooCommerce and integration case studies | Mark Cacay" description="Case studies from Mark Cacay: WordPress and WooCommerce builds, GoHighLevel and HubSpot integrations, and Pageant Poll, a Laravel and Vue SaaS." jsonLd={[breadcrumbJsonLd([{ name: 'Work', path: '/work/' }])]}>
+  <section class="wrap section">
+    <h1>Work</h1>
+    <p class="lede intro">Six projects, each with the problem, what I did and how it turned out.</p>
+    <ul class="grid">
+      {work.map((e, i) => <li><CaseCard entry={e} eager={i < 2} /></li>)}
+    </ul>
+  </section>
+  <section class="band-white section">
+    <div class="wrap more">
+      <h2>More sites I've built or looked after</h2>
+      <ul>
+        {moreWork.map((m) => <li><a href={m.url} rel="noopener" target="_blank">{m.name}</a>{m.note && <span class="muted"> · {m.note}</span>}</li>)}
+      </ul>
+    </div>
+  </section>
+</Base>
+<style>
+  .intro { margin-top: 20px; }
+  .grid { list-style: none; padding: 0; margin: 48px 0 0; display: grid; gap: 24px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr)); }
+  .more ul { list-style: none; padding: 0; margin: 32px 0 0; columns: 2 280px; column-gap: 64px; }
+  .more li { padding: 14px 0; border-top: 1px solid var(--color-paper-deep); break-inside: avoid; }
+</style>
