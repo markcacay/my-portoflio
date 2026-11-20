@@ -23,3 +23,11 @@ describe('every built page', () => {
   });
   it('404 is noindex', () => expect(readPage('404.html')).toContain('<meta name="robots" content="noindex"'));
 });
+
+describe('header nav', () => {
+  it.each(pages)('%s has the desktop nav links outside any <details> (closed details hide content in modern browsers)', (p) => {
+    const header = readPage(p).match(/<header[\s\S]*?<\/header>/)![0];
+    const outside = header.replace(/<details[\s\S]*?<\/details>/g, '');
+    for (const href of ['/work/', '/about/', '/contact/']) expect(outside).toContain(`href="${href}"`);
+  });
+});

@@ -113,10 +113,15 @@ export function createScene(parent: HTMLElement): () => void {
   loop();
   requestAnimationFrame(() => parent.classList.add('is-3d'));
 
-  return () => {
+  const dispose = () => {
+    canvas.removeEventListener('webglcontextlost', onLost);
     cancelAnimationFrame(raf); ro.disconnect(); io.disconnect();
     document.removeEventListener('visibilitychange', onVis);
     scene.traverse((o) => { if (o instanceof Mesh) { o.geometry.dispose(); (o.material as MeshStandardMaterial).dispose(); } });
     renderer.dispose(); canvas.remove(); layer.remove(); tip.remove(); parent.classList.remove('is-3d');
   };
+  // GPU reset or tab eviction: drop the scene and let the poster show again.
+  const onLost = (e: Event) => { e.preventDefault(); dispose(); };
+  canvas.addEventListener('webglcontextlost', onLost);
+  return dispose;
 }

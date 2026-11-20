@@ -30,3 +30,10 @@ describe('submitContact', () => {
     expect(seen!.body).toMatchObject({ access_key: 'k', name: 'Ana', email: 'ana@example.com' });
   });
 });
+
+describe('submitContact timeout', () => {
+  it('gives up with error when the provider never answers', async () => {
+    const hang: typeof fetch = (_u, init) => new Promise((_, reject) => init?.signal?.addEventListener('abort', () => reject(new DOMException('timeout', 'TimeoutError'))));
+    expect(await submitContact(form, hang, 50)).toBe('error');
+  }, 1000);
+});
