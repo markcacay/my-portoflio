@@ -31,3 +31,9 @@ describe.each(htmlFiles())('%s', (p) => {
     for (const img of html.match(/<img\b[^>]*>/g) ?? []) expect(img).toMatch(/alt="[^"]+"/);
   });
 });
+
+describe('Search Console', () => {
+  it('serves the Google verification file unchanged', () => {
+    expect(readPage('googleb48524b881d7305e.html').trim()).toBe('google-site-verification: googleb48524b881d7305e.html');
+  });
+});
