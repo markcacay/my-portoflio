@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { readdirSync, readFileSync } from 'node:fs';
 import matter from 'gray-matter';
-import { readPage } from './helpers';
+import { htmlFiles, readPage } from './helpers';
 
 const slugs = readdirSync('src/content/work').filter((f) => f.endsWith('.md')).map((f) => f.replace(/\.md$/, ''));
 const fm = (slug: string) => matter(readFileSync(`src/content/work/${slug}.md`, 'utf8')).data;
@@ -39,16 +39,17 @@ describe('testimonials and privacy', () => {
       try { expect(readPage(p)).not.toContain('class="testimonials'); } catch (e: any) { if (e.code !== 'ENOENT') throw e; }
     }
   });
-  it('the about page shows no reference contact details', () => {
-    const html = readPage('about/index.html');
-    for (const bad of ['000-000-0000', '000-000-0000', 'redacted@', 'redacted', 'redacted@']) expect(html).not.toContain(bad);
+  it.each(htmlFiles())('%s shows no phone numbers and no email except Mark\'s', (p) => {
+    const text = readPage(p).replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, '');
+    expect(text).not.toMatch(/\b\d{3}[-. ]\d{3}[-. ]\d{4}\b/);
+    for (const e of text.match(/[\w.+-]+@[\w-]+\.[a-z]{2,}/gi) ?? []) expect(e).toBe('markcacay@gmail.com');
   });
   it('the about page lists the full timeline back to 2010', () => {
     const html = readPage('about/index.html');
     for (const co of ['Silver Connect', 'Dalang', 'Virtual Assistant Talent', 'xDigital Excellence', 'Virtual Work Done', 'Dryden Labs']) expect(html).toContain(co);
   });
-  it('the public CV has no references page', () => {
+  it('the public CV has 3 pages (references page removed)', () => {
     const pdf = readFileSync('public/mark-cacay-cv.pdf', 'latin1');
-    expect(pdf).not.toContain('redacted');
+    expect(pdf.match(/\/Type\s*\/Page[^s]/g)?.length).toBe(3);
   });
 });

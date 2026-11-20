@@ -8,10 +8,11 @@ describe('personJsonLd', () => {
     expect(p.url).toBe('https://markcacay.pages.dev');
     expect(p.sameAs).toContain('https://www.linkedin.com/in/mark-cacay-858a1896/');
   });
-  it('never includes a phone number or references contact details', () => {
+  it('never includes a phone number or any email except Mark\'s', () => {
     const s = JSON.stringify(p);
     expect(p).not.toHaveProperty('telephone');
-    for (const bad of ['000-000-0000', '000-000-0000', 'redacted@', 'redacted', 'redacted@']) expect(s).not.toContain(bad);
+    expect(s).not.toMatch(/\d{3}[-. ]\d{3}[-. ]\d{4}/);
+    for (const e of s.match(/[\w.+-]+@[\w-]+\.[\w.]+/g) ?? []) expect(e).toBe('markcacay@gmail.com');
   });
 });
 
