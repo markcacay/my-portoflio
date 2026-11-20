@@ -2,8 +2,8 @@
   --color-paper: #E8EDF1; --color-paper-deep: #D3DCE4; --color-white: #FFFFFF;
   --color-ink: #18212B; --color-slate: #5E6B78;
   --color-cobalt: #2F5BFF; --color-cobalt-text: #2448D8; --color-pulse: #FFB020;
-  --font-display: "Bricolage Grotesque", system-ui, sans-serif;
-  --font-body: "Public Sans", system-ui, sans-serif;
+  --font-display: "Bricolage Grotesque Variable", system-ui, sans-serif;
+  --font-body: "Public Sans Variable", system-ui, sans-serif;
   --space-xs: 8px; --space-s: 16px; --space-m: 24px; --space-l: 40px; --space-xl: 64px; --space-xxl: 120px;
   --gutter: clamp(20px, 4.5vw, 64px);
   --radius-panel: 4px; --radius-pill: 999px;

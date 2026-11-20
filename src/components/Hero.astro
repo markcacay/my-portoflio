@@ -13,16 +13,20 @@ import poster from '../assets/hero-map.svg';
     <div class="map" data-hero-map>
       <Image class="poster" src={poster} alt="WordPress at the centre, wired to GoHighLevel, HubSpot, Klaviyo, WooCommerce, a delivery-slot API, and Laravel plus Vue with PayPal." loading="eager" fetchpriority="high" />
     </div>
-    <figcaption class="hint muted">Hover or tap a tool to see the project behind it.</figcaption>
+    <figcaption class="hint muted">Hover over a tool to see the project behind it.</figcaption>
   </figure>
 </section>
 <script>
   import { shouldRun3D, detectEnv, mountHero } from '../scripts/hero-scene';
   const box = document.querySelector<HTMLElement>('[data-hero-map]');
   if (box && shouldRun3D(detectEnv())) {
-    // Wait until the page is idle so the 3D never competes with first paint.
-    const go = () => { mountHero(box).catch(() => { /* keep the poster */ }); };
-    if ('requestIdleCallback' in window) requestIdleCallback(go, { timeout: 2500 }); else setTimeout(go, 1200);
+    // Start on the visitor's first interaction, so the 3D never competes with loading the page.
+    const events = ['pointermove', 'pointerdown', 'keydown', 'wheel', 'scroll'] as const;
+    const go = () => {
+      events.forEach((e) => removeEventListener(e, go));
+      mountHero(box).catch(() => { /* keep the poster */ });
+    };
+    events.forEach((e) => addEventListener(e, go, { once: true, passive: true }));
   }
 </script>
 <style>
