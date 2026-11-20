@@ -1,11 +1,12 @@
 ---
+import LogoMark from './LogoMark.astro';
 const links = [['Work', '/work/'], ['About', '/about/'], ['Contact', '/contact/']];
 const path = Astro.url.pathname;
 const { dark = false } = Astro.props as { dark?: boolean };
 ---
 <div class:list={['header-band', { 'on-dark': dark }]}>
 <header class="wrap site-header">
-  <a class="wordmark" href="/">Mark Cacay</a>
+  <a class="wordmark" href="/" aria-label="Mark Cacay, home"><LogoMark size={32} /><span>Mark Cacay</span></a>
   <nav aria-label="Main" class="desktop">
     <ul class="desktop-list">
       {links.map(([l, h]) => <li><a href={h} aria-current={path.startsWith(h) ? 'page' : undefined}>{l}</a></li>)}
@@ -28,7 +29,8 @@ const { dark = false } = Astro.props as { dark?: boolean };
   .on-dark .wordmark, .on-dark ul.desktop-list a:not(.btn) { color: var(--color-white); }
   .on-dark summary { border-color: var(--color-paper); color: var(--color-white); }
   .site-header { display: flex; align-items: center; justify-content: space-between; padding-block: 20px; position: relative; }
-  .wordmark { font: 600 22px/1 var(--font-display); color: var(--color-ink); text-decoration: none; }
+  .wordmark { display: inline-flex; align-items: center; gap: 10px; font: 700 22px/1 var(--font-display); letter-spacing: -0.02em; color: var(--color-ink); text-decoration: none; }
+  .on-dark .wordmark { --logo-dot: #5B7CFF; }
   ul { list-style: none; margin: 0; padding: 0; }
   .desktop ul { display: flex; align-items: center; gap: 40px; }
   ul a:not(.btn) { color: var(--color-ink); text-decoration: none; font-weight: 500; font-size: 15px; }

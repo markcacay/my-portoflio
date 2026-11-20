@@ -1,0 +1,8 @@
+---
+// The "Wired m": one line ending at a connection dot. Stroke uses currentColor; dot uses --logo-dot.
+const { size = 30 } = Astro.props as { size?: number };
+---
+<svg class="logo-mark" width={size} height={size} viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+  <path d="M12 52V28a10 10 0 0 1 20 0v24M32 28a10 10 0 0 1 20 0v10" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" />
+  <circle cx="52" cy="51" r="5.5" fill="var(--logo-dot, #2F5BFF)" />
+</svg>

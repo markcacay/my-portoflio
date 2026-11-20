@@ -1,9 +1,11 @@
 ---
 import CtaPair from './CtaPair.astro';
+import LogoMark from './LogoMark.astro';
 import { CONTACT } from '../consts';
 ---
 <footer class="site-footer on-dark">
   <div class="wrap">
+    <a class="logo" href="/" aria-label="Mark Cacay, home"><LogoMark size={44} /></a>
     <h2>Have a project, or a role to fill?</h2>
     <CtaPair />
     <ul class="label">
@@ -15,6 +17,7 @@ import { CONTACT } from '../consts';
 </footer>
 <style>
   .site-footer { background: var(--color-ink); color: var(--color-white); padding-block: 96px 48px; }
+  .logo { display: inline-block; color: var(--color-white); --logo-dot: #5B7CFF; margin-bottom: 28px; }
   h2 { max-width: 18ch; margin-bottom: 32px; }
   ul { list-style: none; padding: 0; margin: 40px 0 0; display: flex; flex-wrap: wrap; gap: 16px 40px; color: var(--color-paper-deep); }
   a { color: var(--color-paper-deep); }
