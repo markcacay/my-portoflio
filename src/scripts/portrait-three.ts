@@ -5,6 +5,7 @@ import { buildParticles, scrollRotation } from './particles';
 
 const SAMPLE = '/portrait/mark-sample.png';
 const CAM_Z = 10, FOV = 35;
+const FIGURE_SCALE = 1.3; // figure height relative to its slot
 const VIEW_H = 2 * CAM_Z * Math.tan((FOV / 2) * (Math.PI / 180)); // world height visible at z = 0
 
 const vert = /* glsl */ `
@@ -94,9 +95,11 @@ export async function createPortrait(hero: HTMLElement, slot: HTMLElement, strid
     renderer.setSize(hr.width, hr.height, false);
     camera.aspect = hr.width / hr.height; camera.updateProjectionMatrix();
     const pxToWorld = VIEW_H / hr.height, viewW = VIEW_H * camera.aspect;
-    figure.scale.setScalar(sr.height * pxToWorld);
-    figure.position.set((sr.left + sr.width / 2 - hr.left) * pxToWorld - viewW / 2, VIEW_H / 2 - (sr.top + sr.height / 2 - hr.top) * pxToWorld, 0);
-    mat.uniforms.uSize.value = Math.max(1, (sr.height / (sample.height / stride)) * 1.3);
+    // Full-length photo: draw it taller than the slot, head at the top, so the hero edge crops the legs.
+    const figH = sr.height * FIGURE_SCALE;
+    figure.scale.setScalar(figH * pxToWorld);
+    figure.position.set((sr.left + sr.width / 2 - hr.left) * pxToWorld - viewW / 2, VIEW_H / 2 - (sr.top + figH / 2 - hr.top) * pxToWorld, 0);
+    mat.uniforms.uSize.value = Math.max(1, (figH / (sample.height / stride)) * 1.3);
     // Faint falling dust in loose vertical columns across the hero.
     const cols = 9;
     for (let i = 0; i < DUST; i++) {
