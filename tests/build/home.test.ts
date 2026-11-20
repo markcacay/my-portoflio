@@ -9,6 +9,16 @@ const jsText = (f: string) => readFileSync(join(DIST, '_astro', f), 'utf8');
 const scriptSrcs = (html: string) => [...html.matchAll(/<script[^>]+src="([^"]+)"/g)].map((m) => m[1]);
 
 describe('homepage', () => {
+  it('has a dark hero and a light-on-dark header', () => {
+    expect(home).toMatch(/<section[^>]+id="hero"[^>]+class="[^"]*hero-dark/);
+    expect(home).toMatch(/class="[^"]*header-band[^"]*on-dark/);
+  });
+  it('no longer shows the tools map', () => {
+    expect(home).not.toContain('Delivery-slot API');
+  });
+  it('the portrait poster has alt text describing Mark', () => {
+    expect(home).toMatch(/<img[^>]+alt="Mark Cacay[^"]*"[^>]+fetchpriority="high"|<img[^>]+fetchpriority="high"[^>]+alt="Mark Cacay/);
+  });
   it('has the value proposition as the only h1', () => {
     expect(home.match(/<h1[\s>]/g)).toHaveLength(1);
     expect(home).toMatch(/<h1[^>]*>I build fast WordPress sites and connect them to the tools your business runs on\.<\/h1>/);

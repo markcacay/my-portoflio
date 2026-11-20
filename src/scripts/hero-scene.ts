@@ -1,7 +1,9 @@
 export interface Env { reducedMotion: boolean; webgl: boolean; saveData: boolean; finePointer: boolean }
 
-// Touch-only devices keep the static poster: same information, no GPU or battery cost.
-export const shouldRun3D = (env: Env): boolean => !env.reducedMotion && env.webgl && !env.saveData && env.finePointer;
+export const shouldRun3D = (env: Env): boolean => !env.reducedMotion && env.webgl && !env.saveData;
+
+// Touch devices get half the particles in each direction (a quarter of the points).
+export const particleStride = (finePointer: boolean): number => (finePointer ? 1 : 2);
 
 export function detectEnv(): Env {
   let webgl = false;
@@ -16,7 +18,7 @@ export function detectEnv(): Env {
 }
 
 // Loads Three.js only when the scene will actually run; returns a dispose function.
-export async function mountHero(parent: HTMLElement): Promise<() => void> {
-  const { createScene } = await import('./hero-three');
-  return createScene(parent);
+export async function mountHero(hero: HTMLElement, slot: HTMLElement, env: Env): Promise<() => void> {
+  const { createPortrait } = await import('./portrait-three');
+  return createPortrait(hero, slot, particleStride(env.finePointer));
 }

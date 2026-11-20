@@ -1,6 +1,6 @@
 :root {
   --color-paper: #E8EDF1; --color-paper-deep: #D3DCE4; --color-white: #FFFFFF;
-  --color-ink: #18212B; --color-slate: #5E6B78;
+  --color-ink: #18212B; --color-slate: #5E6B78; --color-mist: #AEB9C4;
   --color-cobalt: #2F5BFF; --color-cobalt-text: #2448D8; --color-pulse: #FFB020;
   --font-display: "Bricolage Grotesque Variable", system-ui, sans-serif;
   --font-body: "Public Sans Variable", system-ui, sans-serif;

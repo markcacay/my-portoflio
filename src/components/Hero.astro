@@ -1,58 +1,49 @@
 ---
 import { Image } from 'astro:assets';
 import CtaPair from './CtaPair.astro';
-import poster from '../assets/hero-map.svg';
+import poster from '../assets/portrait-poster.png';
 ---
-<section id="hero" class="wrap hero">
-  <div class="intro">
-    <h1>I build fast WordPress sites and connect them to the tools your business runs on.</h1>
-    <p class="lede">Figma-to-WordPress builds, WooCommerce stores and custom integrations with GoHighLevel, HubSpot and Klaviyo. 15+ years building for small businesses in Australia and the US.</p>
-    <CtaPair />
-  </div>
-  <figure class="map-wrap">
-    <div class="map" data-hero-map>
-      <Image class="poster" src={poster} alt="WordPress at the centre, wired to GoHighLevel, HubSpot, Klaviyo, WooCommerce, a delivery-slot API, and Laravel plus Vue with PayPal." loading="eager" fetchpriority="high" />
+<section id="hero" class="hero-dark on-dark" data-hero>
+  <div class="wrap hero">
+    <div class="intro">
+      <h1>I build fast WordPress sites and connect them to the tools your business runs on.</h1>
+      <p class="lede">Figma-to-WordPress builds, WooCommerce stores and custom integrations with GoHighLevel, HubSpot and Klaviyo. 15+ years building for small businesses in Australia and the US.</p>
+      <CtaPair />
     </div>
-    <figcaption class="hint muted">Hover over a tool to see the project behind it.</figcaption>
-  </figure>
+    <div class="slot" data-portrait-slot>
+      <Image class="poster" src={poster} alt="Mark Cacay, standing, drawn in points of light" widths={[240, 480, 720]} sizes="(min-width: 900px) 360px, 240px" loading="eager" fetchpriority="high" />
+    </div>
+  </div>
 </section>
 <script>
   import { shouldRun3D, detectEnv, mountHero } from '../scripts/hero-scene';
-  const box = document.querySelector<HTMLElement>('[data-hero-map]');
-  if (box && shouldRun3D(detectEnv())) {
+  const hero = document.querySelector<HTMLElement>('[data-hero]');
+  const slot = document.querySelector<HTMLElement>('[data-portrait-slot]');
+  const env = detectEnv();
+  if (hero && slot && shouldRun3D(env)) {
     // Start on the visitor's first interaction, so the 3D never competes with loading the page.
-    const events = ['pointermove', 'pointerdown', 'keydown', 'wheel', 'scroll'] as const;
+    const events = ['pointermove', 'pointerdown', 'keydown', 'wheel', 'scroll', 'touchstart'] as const;
     const go = () => {
       events.forEach((e) => removeEventListener(e, go));
-      mountHero(box).catch(() => { /* keep the poster */ });
+      mountHero(hero, slot, env).catch(() => { /* keep the poster */ });
     };
     events.forEach((e) => addEventListener(e, go, { once: true, passive: true }));
   }
 </script>
 <style>
-  .hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 48px; align-items: center; padding-block: 40px 96px; }
-  .intro { display: grid; gap: 28px; }
-  .intro .lede { max-width: 34em; }
-  .map-wrap { margin: 0; display: grid; }
-  .map-wrap > * { grid-column: 1; }
-  .map { position: relative; aspect-ratio: 600 / 580; width: 100%; max-width: 600px; margin-inline: auto; }
-  .poster { width: 100%; height: 100%; transition: opacity 0.6s ease; }
-  .hint { grid-row: 2; font-size: 15px; text-align: center; margin-top: 8px; visibility: hidden; }
-  .map:global(.is-3d) .poster { opacity: 0; }
-  .map-wrap:has(:global(.is-3d)) .hint { visibility: visible; }
-  .map :global(.hero-canvas) { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 0.6s ease; }
-  .map:global(.is-3d) :global(.hero-canvas) { opacity: 1; }
-  .map :global(.hero-labels) { position: absolute; inset: 0; pointer-events: none; }
-  /* Labels belong to the 3D view; until it has painted, the poster carries its own labels. */
-  .map:not(:global(.is-3d)) :global(.hero-labels) { visibility: hidden; }
-  .map :global(.hero-label) { position: absolute; left: 0; top: 0; pointer-events: auto; font: 500 15px/1 var(--font-body); color: var(--color-ink); text-decoration: none; padding: 6px 8px; border-radius: var(--radius-pill); white-space: nowrap; will-change: transform; }
-  .map :global(.hero-label.tone-far) { color: var(--color-slate); }
-  .map :global(.hero-label.tone-cobalt) { color: var(--color-cobalt-text); }
-  .map :global(.hero-label.is-hub) { font: 600 20px/1 var(--font-display); }
-  .map :global(.hero-label:hover), .map :global(.hero-label:focus-visible) { background: var(--color-white); }
-  .map-wrap :global(.hero-tip) { grid-row: 2; justify-self: center; display: grid; gap: 4px; max-width: 420px; margin-top: 8px; padding: 12px 16px; background: var(--color-white); border-radius: var(--radius-panel); font-size: 15px; line-height: 1.5; color: var(--color-slate); text-align: center; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
-  .map-wrap :global(.hero-tip strong) { font: 600 18px/1.2 var(--font-display); color: var(--color-ink); }
-  .map-wrap :global(.hero-tip.show) { opacity: 1; }
-  .map-wrap:has(:global(.hero-tip.show)) .hint { opacity: 0; }
-  @media (max-width: 900px) { .hero { grid-template-columns: 1fr; padding-block: 24px 56px; } }
+  .hero-dark { position: relative; overflow: hidden; background: var(--color-ink); color: var(--color-white); }
+  .hero { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: 32px; align-items: end; min-height: min(calc(100svh - 88px), 860px); padding-top: 40px; }
+  .intro { display: grid; gap: 28px; align-self: center; padding-bottom: 64px; }
+  .intro h1 { color: var(--color-white); }
+  .intro .lede { color: var(--color-mist); max-width: 34em; }
+  .slot { align-self: stretch; display: flex; align-items: flex-end; justify-content: center; min-height: 520px; }
+  .poster { height: 100%; max-height: 780px; width: auto; object-fit: contain; object-position: bottom; transition: opacity 0.8s ease; }
+  .hero-dark:global(.is-3d) .poster { opacity: 0; }
+  .hero-dark :global(.portrait-canvas) { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; opacity: 0; transition: opacity 0.8s ease; pointer-events: none; }
+  .hero-dark:global(.is-3d) :global(.portrait-canvas) { opacity: 1; }
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; min-height: 0; }
+    .intro { padding-bottom: 8px; }
+    .slot { height: 520px; min-height: 0; }
+  }
 </style>
