@@ -1,0 +1,12 @@
+---
+import { CONTACT } from '../consts';
+const { stack = false } = Astro.props as { stack?: boolean };
+---
+<div class:list={['cta-pair', { stack }]}>
+  <a class="btn btn-primary" href="/contact/">Start a project</a>
+  <a class="btn btn-secondary" href={CONTACT.cvPath} download>Download CV</a>
+</div>
+<style>
+  .cta-pair { display: flex; flex-wrap: wrap; gap: 16px; }
+  @media (max-width: 600px) { .cta-pair { flex-direction: column; } .cta-pair .btn { width: 100%; } }
+</style>
