@@ -35,3 +35,16 @@ export function buildParticles(img: RGBAImage, stride: number): Particles {
 }
 
 export const scrollRotation = (progress: number): number => Math.min(1, Math.max(0, progress)) * MAX_TURN;
+
+export interface PointerState { x: number; y: number; strength: number }
+
+// Smoothed cursor for the force field: follows the pointer, ramps up over the hero, fades out when it leaves.
+export function stepPointer(s: PointerState, target: { x: number; y: number; active: boolean }, dt: number): PointerState {
+  const follow = Math.min(1, dt * 10);
+  const ramp = Math.min(1, dt * (target.active ? 6 : 2.5));
+  return {
+    x: s.x + (target.x - s.x) * follow,
+    y: s.y + (target.y - s.y) * follow,
+    strength: s.strength + ((target.active ? 1 : 0) - s.strength) * ramp,
+  };
+}

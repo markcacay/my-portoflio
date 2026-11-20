@@ -49,3 +49,25 @@ describe('scrollRotation', () => {
     expect(scrollRotation(5)).toBeCloseTo(MAX_TURN);
   });
 });
+
+import { stepPointer } from '../../src/scripts/particles';
+
+describe('stepPointer (cursor force field)', () => {
+  const start = { x: 0, y: 0, strength: 0 };
+  it('builds up strength while the cursor is over the hero', () => {
+    let s = start;
+    for (let i = 0; i < 30; i++) s = stepPointer(s, { x: 0.5, y: 0.2, active: true }, 1 / 60);
+    expect(s.strength).toBeGreaterThan(0.9);
+  });
+  it('fades strength back to zero when the cursor leaves, so the body re-forms', () => {
+    let s = { x: 0.5, y: 0.2, strength: 1 };
+    for (let i = 0; i < 120; i++) s = stepPointer(s, { x: 0.5, y: 0.2, active: false }, 1 / 60);
+    expect(s.strength).toBeLessThan(0.05);
+  });
+  it('eases toward the cursor without overshooting, even on a long frame', () => {
+    const s = stepPointer(start, { x: 1, y: -1, active: true }, 2);
+    expect(s.x).toBeGreaterThan(0); expect(s.x).toBeLessThanOrEqual(1);
+    expect(s.y).toBeLessThan(0); expect(s.y).toBeGreaterThanOrEqual(-1);
+    expect(s.strength).toBeLessThanOrEqual(1);
+  });
+});

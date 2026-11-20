@@ -1,7 +1,7 @@
 import {
   WebGLRenderer, Scene, PerspectiveCamera, Points, BufferGeometry, BufferAttribute, ShaderMaterial, AdditiveBlending, Group,
 } from 'three';
-import { buildParticles, scrollRotation } from './particles';
+import { buildParticles, scrollRotation, stepPointer, type PointerState } from './particles';
 
 const SAMPLE = '/portrait/mark-sample.png';
 const CAM_Z = 10, FOV = 35;
@@ -11,6 +11,7 @@ const VIEW_H = 2 * CAM_Z * Math.tan((FOV / 2) * (Math.PI / 180)); // world heigh
 const vert = /* glsl */ `
   attribute vec3 color; attribute float aEdge; attribute float aSeed;
   uniform float uTime; uniform float uScatter; uniform float uSize; uniform float uPR;
+  uniform vec2 uMouse; uniform float uMouseStrength; uniform float uAspect;
   varying vec3 vColor; varying float vAlpha;
   void main() {
     vec3 p = position;
@@ -20,10 +21,25 @@ const vert = /* glsl */ `
     p.z += sin(uTime * 0.7 + aSeed * 20.0) * drift * 2.0;
     vec4 mv = modelViewMatrix * vec4(p, 1.0);
     gl_Position = projectionMatrix * mv;
+    // Cursor force field: push points away from the pointer (in screen space) with a slight swirl.
+    vec2 ndc = gl_Position.xy / gl_Position.w;
+    vec2 d = (ndc - uMouse) * vec2(uAspect, 1.0);
+    float dist = length(d);
+    // Wobbly radius so the dent reads as an organic blob, not a circle.
+    float R = 0.34 * (1.0 + 0.08 * sin(atan(d.y, d.x) * 3.0 + uTime * 1.4));
+    float f = uMouseStrength * smoothstep(R, 0.0, dist);
+    vec2 dir = dist > 0.0001 ? d / dist : vec2(0.0);
+    // Lens bulge: zero at the centre and the rim, strongest between, so the body swells and bends without a hole.
+    float rim = max(1.0 - dist / R, 0.0);
+    vec2 push = dir * dist * rim * rim * 1.4 * uMouseStrength
+      + vec2(-dir.y, dir.x) * 0.03 * f * sin(uTime * 2.0 + aSeed * 12.0)
+      + vec2(sin(aSeed * 91.0 + uTime * 3.0), cos(aSeed * 53.0 + uTime * 2.6)) * 0.03 * f;
+    push.x /= uAspect;
+    gl_Position.xy += push * gl_Position.w;
     float twinkle = 0.8 + 0.4 * (0.5 + 0.5 * sin(uTime * 1.3 + aSeed * 60.0));
     gl_PointSize = uSize * uPR * twinkle * (${CAM_Z.toFixed(1)} / -mv.z);
     vColor = color;
-    vAlpha = (1.0 - aEdge * 0.3) * (1.0 - uScatter * 0.7);
+    vAlpha = (1.0 - aEdge * 0.3) * (1.0 - uScatter * 0.7) * (1.0 + f * 0.25);
   }`;
 const frag = /* glsl */ `
   varying vec3 vColor; varying float vAlpha;
@@ -75,7 +91,10 @@ export async function createPortrait(hero: HTMLElement, slot: HTMLElement, strid
   geo.setAttribute('aSeed', new BufferAttribute(Float32Array.from({ length: parts.count }, Math.random), 1));
   const mat = new ShaderMaterial({
     vertexShader: vert, fragmentShader: frag, transparent: true, depthWrite: false, blending: AdditiveBlending,
-    uniforms: { uTime: { value: 0 }, uScatter: { value: 0 }, uSize: { value: 2 }, uPR: { value: pr } },
+    uniforms: {
+      uTime: { value: 0 }, uScatter: { value: 0 }, uSize: { value: 2 }, uPR: { value: pr },
+      uMouse: { value: [0, 0] }, uMouseStrength: { value: 0 }, uAspect: { value: 1 },
+    },
   });
   const figure = new Group(); scene.add(figure);
   figure.add(new Points(geo, mat));
@@ -94,6 +113,7 @@ export async function createPortrait(hero: HTMLElement, slot: HTMLElement, strid
     const hr = hero.getBoundingClientRect(), sr = slot.getBoundingClientRect();
     renderer.setSize(hr.width, hr.height, false);
     camera.aspect = hr.width / hr.height; camera.updateProjectionMatrix();
+    mat.uniforms.uAspect.value = camera.aspect;
     const pxToWorld = VIEW_H / hr.height, viewW = VIEW_H * camera.aspect;
     // Full-length photo: draw it taller than the slot, head at the top, so the hero edge crops the legs.
     const figH = sr.height * FIGURE_SCALE;
@@ -112,8 +132,18 @@ export async function createPortrait(hero: HTMLElement, slot: HTMLElement, strid
   };
   const onScroll = () => { const r = hero.getBoundingClientRect(); progress = Math.min(1, Math.max(0, -r.top / (r.height * 0.85))); };
   const ptr = { x: 0, y: 0 };
-  const onMove = (e: PointerEvent) => { ptr.x = e.clientX / innerWidth - 0.5; ptr.y = e.clientY / innerHeight - 0.5; };
+  const cursor = { x: 0, y: 0, active: false };          // pointer in the hero's NDC (-1..1)
+  let field: PointerState = { x: 0, y: 0, strength: 0 };
+  const onMove = (e: PointerEvent) => {
+    ptr.x = e.clientX / innerWidth - 0.5; ptr.y = e.clientY / innerHeight - 0.5;
+    const r = hero.getBoundingClientRect();
+    cursor.x = ((e.clientX - r.left) / r.width) * 2 - 1; cursor.y = -(((e.clientY - r.top) / r.height) * 2 - 1);
+    cursor.active = e.clientY >= r.top && e.clientY <= r.bottom && (e.pointerType === 'mouse' || e.pressure > 0);
+    if (field.strength < 0.01) { field = { ...field, x: cursor.x, y: cursor.y }; } // no sweep in from the old spot
+  };
+  const onLeave = () => { cursor.active = false; };
   addEventListener('scroll', onScroll, { passive: true }); addEventListener('pointermove', onMove, { passive: true });
+  document.documentElement.addEventListener('pointerleave', onLeave); addEventListener('pointerup', onLeave);
   const ro = new ResizeObserver(layout); ro.observe(hero); layout(); onScroll();
 
   let visible = true, raf = 0, last = performance.now(), time = 0;
@@ -127,6 +157,8 @@ export async function createPortrait(hero: HTMLElement, slot: HTMLElement, strid
     figure.rotation.y += (targetY - figure.rotation.y) * 0.08;
     figure.rotation.x += (ptr.y * 0.08 - figure.rotation.x) * 0.08;
     mat.uniforms.uTime.value = time; dustMat.uniforms.uTime.value = time;
+    field = stepPointer(field, cursor, dt);
+    mat.uniforms.uMouse.value = [field.x, field.y]; mat.uniforms.uMouseStrength.value = field.strength;
     mat.uniforms.uScatter.value += (Math.max(0, (progress - 0.35) / 0.65) - mat.uniforms.uScatter.value) * 0.1;
     renderer.render(scene, camera);
   }
@@ -136,6 +168,7 @@ export async function createPortrait(hero: HTMLElement, slot: HTMLElement, strid
   const dispose = () => {
     cancelAnimationFrame(raf); ro.disconnect(); io.disconnect();
     removeEventListener('scroll', onScroll); removeEventListener('pointermove', onMove);
+    document.documentElement.removeEventListener('pointerleave', onLeave); removeEventListener('pointerup', onLeave);
     document.removeEventListener('visibilitychange', onVis);
     canvas.removeEventListener('webglcontextlost', onLost);
     geo.dispose(); mat.dispose(); dustGeo.dispose(); dustMat.dispose(); renderer.dispose();
