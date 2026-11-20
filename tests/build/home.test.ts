@@ -21,7 +21,7 @@ describe('homepage', () => {
   });
   it('has the value proposition as the only h1', () => {
     expect(home.match(/<h1[\s>]/g)).toHaveLength(1);
-    expect(home).toMatch(/<h1[^>]*>I build fast WordPress sites and connect them to the tools your business runs on\.<\/h1>/);
+    expect(home).toMatch(/<h1[^>]*>I build fast websites, fix the broken ones, and connect them to the tools your business runs on\.<\/h1>/);
   });
   it('hero has a high-priority poster image and both CTAs in plain HTML', () => {
     const hero = home.slice(home.indexOf('id="hero"'), home.indexOf('id="selected-work"'));

@@ -1,9 +1,9 @@
 export const SITE = {
   url: 'https://markcacay.pages.dev',
   name: 'Mark Cacay',
-  title: 'Mark Cacay — WordPress & GoHighLevel Developer',
+  title: 'Mark Cacay — AI-driven Web Developer & Problem-Solver',
   description:
-    'Freelance WordPress and GoHighLevel developer. Figma-to-WordPress builds, WooCommerce stores and CRM integrations for small businesses in Australia and the US.',
+    'AI-driven web developer and problem-solver. WordPress and PHP since 2010, Laravel and Vue when a project needs more: new builds, debugging, site rescues and CRM integrations for businesses in Australia and the US.',
 };
 
 export const CONTACT = {

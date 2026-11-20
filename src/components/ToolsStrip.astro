@@ -1,0 +1,49 @@
+---
+import { toolRows } from '../data/tools';
+const all = toolRows.flat();
+const icons = all.filter((x) => x.icon);
+---
+<div id="tools" class="tools">
+  <h2 class="label muted">Tools I use</h2>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    {icons.map((x) => <symbol id={`si-${x.icon!.slug}`} viewBox="0 0 24 24"><path d={x.icon!.path} /></symbol>)}
+  </svg>
+  <ul class="tools-list visually-hidden">{all.map((x) => <li>{x.name}</li>)}</ul>
+  {toolRows.map((row, r) => (
+    <div class:list={['marquee', `row-${r + 1}`]} aria-hidden="true">
+      <div class="track">
+        {[0, 1].map((copy) => (
+          <ul class:list={['tools-list', { dup: copy === 1 }]} aria-hidden="true">
+            {row.map((x) => (
+              <li style={x.icon ? `--brand:#${x.icon.hex}` : undefined}>
+                {x.icon
+                  ? <svg width="22" height="22" focusable="false"><use href={`#si-${x.icon.slug}`} /></svg>
+                  : <svg width="22" height="22" viewBox="0 0 24 24" focusable="false" class="no-logo"><circle cx="12" cy="12" r="5" /></svg>}
+                <span>{x.name}</span>
+              </li>
+            ))}
+          </ul>
+        ))}
+      </div>
+    </div>
+  ))}
+</div>
+<style>
+  .tools { margin-top: 64px; display: grid; gap: 20px; }
+  .marquee { overflow: hidden; mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
+  .track { display: flex; width: max-content; animation: tools-scroll 55s linear infinite; }
+  .row-2 .track { animation-direction: reverse; animation-duration: 65s; }
+  .marquee:hover .track { animation-play-state: paused; }
+  .tools-list { list-style: none; margin: 0; padding: 0 44px 0 0; display: flex; gap: 44px; }
+  .tools-list li { display: flex; align-items: center; gap: 10px; white-space: nowrap; font: 600 20px/1.2 var(--font-display); color: var(--color-ink); }
+  .tools-list svg { fill: var(--color-slate); flex: none; transition: fill 0.2s; }
+  .tools-list li:hover svg { fill: var(--brand, var(--color-cobalt)); }
+  .no-logo { fill: var(--color-cobalt) !important; }
+  @keyframes tools-scroll { to { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) {
+    .marquee { mask-image: none; }
+    .track { width: auto; }
+    .tools-list { flex-wrap: wrap; gap: 16px 32px; }
+    .dup { display: none; }
+  }
+</style>

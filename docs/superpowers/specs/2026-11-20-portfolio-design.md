@@ -100,3 +100,8 @@ Mark asked for a lovelyfriendly.com-style effect (original implementation, no co
 - **Decided by Mark:** dark ink hero (rest of site stays light); the integrations map is dropped (integrations remain in case studies, services and tools strip).
 - **Claude's calls:** Three.js point cloud built at runtime from `public/portrait/mark-sample.png` (cutout, CLAHE contrast, 560px tall); depth = rounded per-row bulge; colour white (skin/highlights) → cobalt (dark clothes); faint falling dust columns; turns up to ~63° and disperses as the hero scrolls away, slight pointer parallax. Poster = rendered still of the same scene (`src/assets/portrait-poster.png`), live scene starts on first interaction on all devices (touch: every 2nd pixel). Reduced motion / no WebGL2 / Save-Data keep the poster.
 - **Photo:** Mark's transparent full-length cutout (`design/source/portrait-cutout.png`), drawn at 1.3× the slot height so the hero edge crops the legs.
+
+## Amendment 2026-11-20: positioning and tools
+- Mark: position as an **AI-driven web developer and problem-solver** (WordPress/PHP since 2010, Laravel/Vue beyond it; debugging and site rescues are a core service). Hero H1: "I build fast websites, fix the broken ones, and connect them to the tools your business runs on."
+- Pageant Poll is presented as a **client project** (never "my own").
+- "Tools I use" is a two-row scrolling logo strip (Simple Icons, CC0), incl. this site's stack (Astro, Three.js) and Pageant Poll's (Laravel, Vue, Inertia, PrimeVue, Vite, Node.js for the build, MySQL, Docker). Static wrapped grid under reduced motion; one screen-reader list, visual rows aria-hidden.

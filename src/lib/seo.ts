@@ -11,10 +11,10 @@ export function personJsonLd(): object {
     alternateName: 'Mark Cacay',
     url: SITE.url,
     image: abs('/og/default.png'),
-    jobTitle: 'WordPress & GoHighLevel Developer',
+    jobTitle: 'AI-driven Web Developer',
     email: `mailto:${CONTACT.email}`,
     address: { '@type': 'PostalAddress', addressCountry: 'PH' },
-    knowsAbout: ['WordPress', 'WooCommerce', 'GoHighLevel', 'HubSpot', 'Klaviyo', 'Laravel', 'Vue.js', 'PHP', 'JavaScript', 'SEO'],
+    knowsAbout: ['WordPress', 'PHP', 'Debugging', 'AI-assisted development', 'WooCommerce', 'GoHighLevel', 'HubSpot', 'Klaviyo', 'Laravel', 'Vue.js', 'PHP', 'JavaScript', 'SEO'],
     sameAs: [CONTACT.linkedin, ...(CONTACT.github ? [CONTACT.github] : [])],
   };
 }
