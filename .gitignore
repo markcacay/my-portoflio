@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.astro/
+.superpowers/
+.lighthouse/
+.DS_Store
+design/source/resume-2026-with-references.pdf
