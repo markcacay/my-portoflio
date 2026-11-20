@@ -1,0 +1,71 @@
+---
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import CaseCard from '../components/CaseCard.astro';
+import Testimonials from '../components/Testimonials.astro';
+import headshot from '../assets/mark-cacay.jpg';
+import { SITE } from '../consts';
+
+const featured = (await getCollection('work')).filter((e) => e.data.featured).sort((a, b) => a.data.order - b.data.order);
+const services = [
+  ['Figma to WordPress', 'Pixel-accurate, responsive builds with Elementor Pro or a custom theme.'],
+  ['WooCommerce stores', 'Wholesale pricing, delivery slots, order rules and abandoned-cart flows.'],
+  ['CRM and marketing integrations', 'GoHighLevel, HubSpot, Klaviyo and Mailchimp, wired in with secure server-side code.'],
+  ['Web apps with Laravel and Vue', "When WordPress isn't the right fit, like Pageant Poll."],
+  ['Care and fixes', 'Updates, speed, SEO and rescuing sites stuck on old PHP.'],
+];
+const tools = ['WordPress', 'Elementor Pro', 'WooCommerce', 'Laravel', 'Vue.js', 'PHP', 'JavaScript', 'Shopify', 'GoHighLevel', 'HubSpot', 'Stripe', 'PayPal', 'Figma'];
+const website = { '@context': 'https://schema.org', '@type': 'WebSite', name: SITE.name, url: SITE.url };
+---
+<Base title={SITE.title} description={SITE.description} jsonLd={[website]}>
+  <Hero />
+  <section id="selected-work" class="wrap section" aria-labelledby="w-h">
+    <div class="head"><h2 id="w-h">Selected work</h2><a class="label" href="/work/">See all 6 case studies</a></div>
+    <ul class="cards">
+      {featured.map((e, i) => <li class:list={{ big: i === 0 }}><CaseCard entry={e} large={i === 0} /></li>)}
+    </ul>
+  </section>
+  <section id="services" class="band-white section" aria-labelledby="s-h">
+    <div class="wrap services">
+      <div><h2 id="s-h">What I can do for you</h2><p class="muted intro">Bring a Figma file, an old site that needs saving, or a tool that won't talk to your website.</p></div>
+      <dl>{services.map(([h, d]) => <div><dt><h3>{h}</h3></dt><dd class="muted">{d}</dd></div>)}</dl>
+    </div>
+    <div id="tools" class="wrap tools">
+      <h2 class="label muted">Tools I use every week</h2>
+      <ul>{tools.map((t) => <li>{t}</li>)}</ul>
+    </div>
+  </section>
+  <Testimonials />
+  <section id="about" class="wrap section about" aria-labelledby="a-h">
+    <Image src={headshot} alt="Mark Cacay" widths={[360, 720]} sizes="(min-width: 900px) 360px, 120px" loading="lazy" />
+    <div>
+      <h2 id="a-h">Hi, I'm Mark.</h2>
+      <p class="lede">I'm a web developer in the Philippines. Since 2010 I've built and looked after websites for agencies and small businesses, including two years full-time with a Sydney agency. Most of my clients are in Australia and the US.</p>
+      <a class="label" href="/about/">More about me and my work history</a>
+    </div>
+  </section>
+</Base>
+<style>
+  .head { display: flex; justify-content: space-between; align-items: end; gap: 16px; flex-wrap: wrap; margin-bottom: 40px; }
+  .head a { color: var(--color-ink); }
+  .cards { list-style: none; margin: 0; padding: 0; display: grid; gap: 24px; grid-template-columns: 1.33fr 1fr 1fr; }
+  .services { display: grid; grid-template-columns: minmax(0, 440px) 1fr; gap: 32px 64px; }
+  .services .intro { margin-top: 16px; }
+  .services dl { margin: 0; }
+  .services dl > div { display: grid; grid-template-columns: minmax(0, 340px) 1fr; gap: 8px 32px; padding-block: 22px; border-top: 1px solid var(--color-paper-deep); }
+  .services h3 { font-size: 22px; }
+  .services dd { margin: 0; }
+  .tools { margin-top: 64px; }
+  .tools ul { list-style: none; padding: 0; margin: 16px 0 0; display: flex; flex-wrap: wrap; gap: 8px 28px; font: 600 22px/1.3 var(--font-display); }
+  .about { display: grid; grid-template-columns: 360px minmax(0, 640px); gap: 32px 64px; align-items: center; }
+  .about img { width: 100%; aspect-ratio: 360 / 420; object-fit: cover; border-radius: var(--radius-panel); }
+  .about > div { display: grid; gap: 20px; }
+  .about a { color: var(--color-cobalt-text); }
+  @media (max-width: 900px) {
+    .cards, .services, .services dl > div { grid-template-columns: 1fr; }
+    .about { grid-template-columns: 1fr; }
+    .about img { width: 120px; height: 120px; border-radius: 50%; }
+  }
+</style>
