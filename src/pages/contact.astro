@@ -1,0 +1,74 @@
+---
+import Base from '../layouts/Base.astro';
+import { CONTACT, SITE } from '../consts';
+import { breadcrumbJsonLd } from '../lib/seo';
+---
+<Base title="Contact Mark Cacay | Start a WordPress or integration project" description="Tell Mark Cacay about your WordPress, WooCommerce or GoHighLevel project, or a role you're hiring for. Send a message, email markcacay@gmail.com or download his CV." jsonLd={[breadcrumbJsonLd([{ name: 'Contact', path: '/contact/' }])]}>
+  <section class="wrap section contact">
+    <div class="intro">
+      <h1>Tell me about your project</h1>
+      <p class="lede">A new site, a fix, or a role you're hiring for. I'll reply by email.</p>
+    </div>
+    <form id="contact-form" action="https://api.web3forms.com/submit" method="POST">
+      <input type="hidden" name="access_key" value={CONTACT.web3formsKey} />
+      <input type="hidden" name="subject" value="New enquiry from markcacay.pages.dev" />
+      <input type="hidden" name="from_name" value="markcacay.pages.dev" />
+      <input type="hidden" name="redirect" value={`${SITE.url}/contact/?sent=1`} />
+      <input type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" style="display: none" />
+      <div class="field"><label for="cf-name">Your name</label><input id="cf-name" name="name" autocomplete="name" required /></div>
+      <div class="field"><label for="cf-email">Email</label><input id="cf-email" type="email" name="email" autocomplete="email" required /></div>
+      <div class="field"><label for="cf-message">What do you need?</label><textarea id="cf-message" name="message" rows="6" required placeholder="e.g. Build our new site from a Figma file and connect it to HubSpot."></textarea></div>
+      <button class="btn btn-primary" type="submit">Send message</button>
+      <p id="cf-status" class="status" role="status" aria-live="polite" hidden></p>
+    </form>
+    <aside class="alt" aria-labelledby="alt-h">
+      <h2 id="alt-h">Or reach me directly</h2>
+      <ul>
+        <li><a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a></li>
+        <li><a href={CONTACT.linkedin} rel="me noopener" target="_blank">LinkedIn</a></li>
+        <li><a href={CONTACT.cvPath} download>Download my CV (PDF)</a></li>
+      </ul>
+    </aside>
+  </section>
+</Base>
+<script>
+  import { submitContact } from '../scripts/contact-form';
+  const form = document.getElementById('contact-form') as HTMLFormElement;
+  const status = document.getElementById('cf-status') as HTMLParagraphElement;
+  const button = form.querySelector('button') as HTMLButtonElement;
+  const show = (ok: boolean) => {
+    status.hidden = false;
+    status.className = `status ${ok ? 'ok' : 'error'}`;
+    status.textContent = ok
+      ? "Message sent. I'll reply to you by email."
+      : "Your message didn't send. Check your connection and try again, or email markcacay@gmail.com. Your text is still here.";
+  };
+  if (new URLSearchParams(location.search).has('sent')) show(true);
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    button.disabled = true; button.textContent = 'Sending…';
+    const result = await submitContact(form);
+    button.disabled = false; button.textContent = 'Send message';
+    show(result === 'ok');
+    if (result === 'ok') form.reset();
+  });
+</script>
+<style>
+  .contact { display: grid; grid-template-columns: minmax(0, 560px) minmax(0, 360px); gap: 48px 96px; align-items: start; }
+  .intro { grid-column: 1 / -1; display: grid; gap: 20px; }
+  form { display: grid; gap: 20px; }
+  .field { display: grid; gap: 8px; }
+  label { font-weight: 500; font-size: 15px; }
+  input, textarea { font: inherit; color: var(--color-ink); background: var(--color-white); border: 1px solid var(--color-slate); border-radius: var(--radius-panel); padding: 13px 16px; width: 100%; }
+  textarea { min-height: 140px; resize: vertical; }
+  input:focus-visible, textarea:focus-visible { outline: 3px solid var(--color-cobalt-text); outline-offset: 1px; }
+  button { width: 100%; cursor: pointer; }
+  button[disabled] { opacity: 0.7; cursor: progress; }
+  .status { padding: 14px 16px; border-radius: var(--radius-panel); background: var(--color-white); font-size: 15px; }
+  .status.ok { border: 1px solid var(--color-cobalt-text); }
+  .status.error { border: 2px solid var(--color-ink); }
+  .alt { display: grid; gap: 12px; }
+  .alt h2 { font-size: 22px; }
+  .alt ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; font-size: 18px; }
+  @media (max-width: 860px) { .contact { grid-template-columns: 1fr; } }
+</style>
