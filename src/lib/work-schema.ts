@@ -1,7 +1,7 @@
 import { z } from 'astro/zod';
 
 // `image` is Astro's schema helper; injected so tests can run without Astro.
-export const makeWorkSchema = (image: () => z.ZodType) =>
+export const makeWorkSchema = <I extends z.ZodType>(image: () => I) =>
   z.object({
     title: z.string(),
     client: z.string(),
