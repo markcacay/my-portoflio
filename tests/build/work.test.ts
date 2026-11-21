@@ -48,8 +48,9 @@ describe('testimonials and privacy', () => {
     const html = readPage('about/index.html');
     for (const co of ['Silver Connect', 'Dalang', 'Virtual Assistant Talent', 'xDigital Excellence', 'Virtual Work Done', 'Dryden Labs']) expect(html).toContain(co);
   });
-  it('the public CV has 3 pages (references page removed)', () => {
+  // Page count pins the reviewed CV (2026, no references page; text scanned for phones/emails before swapping in).
+  it('the public CV is the reviewed 4-page version', () => {
     const pdf = readFileSync('public/mark-cacay-cv.pdf', 'latin1');
-    expect(pdf.match(/\/Type\s*\/Page[^s]/g)?.length).toBe(3);
+    expect(pdf.match(/\/Type\s*\/Page[^s]/g)?.length).toBe(4);
   });
 });
